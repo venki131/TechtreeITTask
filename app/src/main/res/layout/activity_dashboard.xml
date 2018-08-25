@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_15"
+    tools:context="com.example.venkateshkashyap.techtreeittask.activity.DashboardActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_profile_image"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:foregroundGravity="center"
+        android:src="@drawable/venki"
+        app:civ_border_color="@color/colorOysterPink"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_profile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_10"
+        android:text="Venkatesh Kashyap"
+        android:textSize="@dimen/size_20"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/img_profile_image" />
+
+    <TextView
+        android:id="@+id/tv_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_10"
+        android:layout_marginTop="@dimen/size_5"
+        android:text="venkatesh.kashyap13@gmail.com"
+        android:textSize="@dimen/size_12"
+        app:layout_constraintStart_toEndOf="@id/img_profile_image"
+        app:layout_constraintTop_toBottomOf="@id/tv_profile_name" />
+
+    <Button
+        android:id="@+id/btn_web"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="@dimen/margin_20"
+        android:background="@color/colorPrimary"
+        android:clickable="true"
+        android:text="Web"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/size_20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_email" />
+
+    <Button
+        android:id="@+id/btn_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="@dimen/margin_20"
+        android:background="@color/colorPrimary"
+        android:clickable="true"
+        android:text="Contacts"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/size_20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_web" />
+</android.support.constraint.ConstraintLayout>
