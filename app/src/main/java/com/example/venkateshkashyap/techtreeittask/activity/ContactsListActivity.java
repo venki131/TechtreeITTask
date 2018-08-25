@@ -1,6 +1,11 @@
 package com.example.venkateshkashyap.techtreeittask.activity;
 
+/**
+ * Created by Venkatesh Kashyap on 08/25/2018.
+ */
+
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -9,19 +14,23 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.example.venkateshkashyap.techtreeittask.R;
 import com.example.venkateshkashyap.techtreeittask.adapter.ContactsAdapter;
-import com.example.venkateshkashyap.techtreeittask.constants.AppConstants;
 import com.example.venkateshkashyap.techtreeittask.model.ContactVo;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
 public class ContactsListActivity extends AppCompatActivity {
 
@@ -35,57 +44,78 @@ public class ContactsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts_list);
         mRecyclerView = findViewById(R.id.recycler_view);
-        AccessContact();
+        askForContactPermission();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void AccessContact() {
-        List<String> permissionsNeeded = new ArrayList<String>();
-        final List<String> permissionsList = new ArrayList<String>();
-        if (!addPermission(permissionsList, Manifest.permission.READ_CONTACTS))
-            permissionsNeeded.add("Read Contacts");
-        if (!addPermission(permissionsList, Manifest.permission.WRITE_CONTACTS))
-            permissionsNeeded.add("Write Contacts");
-        if (permissionsList.size() > 0) {
-            if (permissionsNeeded.size() > 0) {
-                String message = "You need to grant access to " + permissionsNeeded.get(0);
-                for (int i = 1; i < permissionsNeeded.size(); i++)
-                    message = message + ", " + permissionsNeeded.get(i);
-                showMessageOKCancel(message,
-                        new DialogInterface.OnClickListener() {
-                            @RequiresApi(api = Build.VERSION_CODES.M)
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                                        READ_CONTACTS_PERMISSIONS_REQUEST);
-                            }
-                        });
+    public void askForContactPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_CONTACTS)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Contacts access needed");
+                    builder.setPositiveButton(android.R.string.ok, null);
+                    builder.setMessage("please confirm Contacts access");
+                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @TargetApi(Build.VERSION_CODES.M)
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            requestPermissions(
+                                    new String[]
+                                            {Manifest.permission.READ_CONTACTS}
+                                    , READ_CONTACTS_PERMISSIONS_REQUEST);
+                        }
+                    });
+                    builder.show();
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_CONTACTS},
+                            READ_CONTACTS_PERMISSIONS_REQUEST);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            } else {
+                getAllContacts();
+            }
+        } else {
+            getAllContacts();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case READ_CONTACTS_PERMISSIONS_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getAllContacts();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(this, "No Permissions ", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
                 return;
             }
-            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                    READ_CONTACTS_PERMISSIONS_REQUEST);
-            return;
+
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
-    }
-
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(ContactsListActivity.this)
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private boolean addPermission(List<String> permissionsList, String permission) {
-        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            permissionsList.add(permission);
-
-            if (!shouldShowRequestPermissionRationale(permission))
-                return false;
-        }
-        return true;
     }
 
     private void getAllContacts() {
@@ -96,7 +126,7 @@ public class ContactsListActivity extends AppCompatActivity {
                 null,
                 null,
                 null,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + AppConstants.SORT_ASCENDING);
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
@@ -135,7 +165,8 @@ public class ContactsListActivity extends AppCompatActivity {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             mRecyclerView.setAdapter(contactsAdapter);
             //draw divider line to recycler view
-            mRecyclerView.addItemDecoration(new DividerItemDecoration(this, 0)); //0 is horizontal
+            DividerItemDecoration itemDecor = new DividerItemDecoration(getApplicationContext(), VERTICAL);
+            mRecyclerView.addItemDecoration(itemDecor);
         }
     }
 }

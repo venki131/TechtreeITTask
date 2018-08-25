@@ -12,7 +12,7 @@
         android:layout_height="48dp"
         android:layout_marginLeft="@dimen/margin_10"
         android:layout_marginRight="@dimen/margin_10"
-        android:src="@drawable/venki"
+        android:src="@drawable/contact_image"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView

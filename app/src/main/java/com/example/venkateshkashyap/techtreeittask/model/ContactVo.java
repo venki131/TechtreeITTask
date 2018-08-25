@@ -1,19 +1,21 @@
 package com.example.venkateshkashyap.techtreeittask.model;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Venkatesh Kashyap on 8/25/2018.
  */
 
 public class ContactVo {
-    private String contactImage;
+    private Bitmap contactImage;
     private String contactName;
     private String contactNumber;
 
-    public String getContactImage() {
+    public Bitmap getContactImage() {
         return contactImage;
     }
 
-    public void setContactImage(String contactImage) {
+    public void setContactImage(Bitmap contactImage) {
         this.contactImage = contactImage;
     }
 
