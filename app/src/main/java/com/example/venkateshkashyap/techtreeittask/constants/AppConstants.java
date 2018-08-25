@@ -5,5 +5,9 @@ package com.example.venkateshkashyap.techtreeittask.constants;
  */
 
 public class AppConstants {
-    public static final int RC_SIGN_IN = 005;
+    public static final int RC_SIGN_IN = 007;
+    public static final String USERNAME = "UserName";
+    public static final String IMAGE_URL = "ImageUrl";
+    public static final String EMAIL = "Email";
+    public static final String GOOGLE_URL = "http://www.google.co.in";
 }
