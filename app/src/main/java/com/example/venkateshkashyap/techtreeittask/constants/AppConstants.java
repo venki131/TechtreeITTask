@@ -10,4 +10,5 @@ public class AppConstants {
     public static final String IMAGE_URL = "ImageUrl";
     public static final String EMAIL = "Email";
     public static final String GOOGLE_URL = "http://www.google.co.in";
+    public static final String SORT_ASCENDING = "ASC";
 }

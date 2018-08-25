@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:padding="@dimen/padding_15">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_contact_image"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="@dimen/margin_10"
+        android:layout_marginRight="@dimen/margin_10"
+        android:src="@drawable/venki"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_contact_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Venkatesh Kashyap"
+        android:layout_marginLeft="@dimen/margin_10"
+        android:textSize="@dimen/size_16"
+        app:layout_constraintStart_toEndOf="@id/img_contact_image" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_phone_number"
+        android:text="+91 7795504515"
+        android:textSize="@dimen/size_14"
+        android:layout_marginLeft="@dimen/margin_10"
+        app:layout_constraintStart_toEndOf="@id/img_contact_image"
+        app:layout_constraintTop_toBottomOf="@id/tv_contact_name"/>
+</android.support.constraint.ConstraintLayout>

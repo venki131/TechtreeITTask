@@ -6,6 +6,7 @@ package com.example.venkateshkashyap.techtreeittask.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +17,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.venkateshkashyap.techtreeittask.R;
 import com.example.venkateshkashyap.techtreeittask.constants.AppConstants;
 
-public class DashboardActivity extends AppCompatActivity implements View.OnClickListener{
+public class DashboardActivity extends AppCompatActivity implements View.OnClickListener {
 
     private de.hdodenhof.circleimageview.CircleImageView mProfileImage;
     private TextView mUserName;
@@ -58,7 +59,10 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
             case R.id.btn_web:
                 Intent intent = new Intent(DashboardActivity.this, WebActivity.class);
                 startActivity(intent);
-            break;
+                break;
+            case R.id.btn_contacts:
+                Intent contactIntent = new Intent(DashboardActivity.this, ContactsListActivity.class);
+                startActivity(contactIntent);
         }
     }
 }
