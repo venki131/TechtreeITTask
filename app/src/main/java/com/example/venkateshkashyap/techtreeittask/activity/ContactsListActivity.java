@@ -65,9 +65,9 @@ public class ContactsListActivity extends AppCompatActivity implements OnItemCli
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.READ_CONTACTS)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Contacts access needed");
+                    builder.setTitle(R.string.access_needed);
                     builder.setPositiveButton(android.R.string.ok, null);
-                    builder.setMessage("please confirm Contacts access");
+                    builder.setMessage(R.string.confirm_contact_access);
                     builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                         @TargetApi(Build.VERSION_CODES.M)
                         @Override
@@ -116,7 +116,7 @@ public class ContactsListActivity extends AppCompatActivity implements OnItemCli
                     // contacts-related task you need to do.
 
                 } else {
-                    Toast.makeText(this, "No Permissions ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.no_permission, Toast.LENGTH_SHORT).show();
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
@@ -205,7 +205,6 @@ public class ContactsListActivity extends AppCompatActivity implements OnItemCli
         // check if item still exists
         if (position != RecyclerView.NO_POSITION) {
             ContactVo clickedDataItem = contactVoList.get(position);
-            Toast.makeText(view.getContext(), "You clicked " + clickedDataItem.getContactName(), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(ContactsListActivity.this, ContactDetailsActivity.class);
             intent.putExtra(AppConstants.CONTACT_DETAILS_LIST, clickedDataItem);
             startActivity(intent);

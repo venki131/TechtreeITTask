@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "883219092540-f0jjh4qa17hs8uiip0gkdeb2ik3g0q7t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.venkateshkashyap.techtreeittask",
+            "certificate_hash": "ca93a3b6d71f784f81195c7d03f503818852637b"
+          }
+        },
+        {
           "client_id": "883219092540-fi2jr0524gdd4imhbnu0p63o8p52bd4k.apps.googleusercontent.com",
           "client_type": 3
         }

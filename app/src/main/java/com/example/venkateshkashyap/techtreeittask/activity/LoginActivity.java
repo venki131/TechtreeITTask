@@ -22,7 +22,6 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -32,12 +31,15 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+/*import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;*/
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -47,28 +49,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private LoginButton mFacebookSignInButton;
     private CallbackManager callbackManager;
     private AccessToken mAccessToken;
+    //private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Initialize Firebase Auth
+       // mAuth = FirebaseAuth.getInstance();
+
         mSignInButton = findViewById(R.id.btn_sign_in);
         mFacebookSignInButton = findViewById(R.id.login_button);
-        //Arrays.asList("public_profile, email, user_birthday");
-        //"email", "public_profile", "user_friends"
-        mFacebookSignInButton.setReadPermissions("email", "public_profile", "user_friends");
 
         mSignInButton.setOnClickListener(this);
         mFacebookSignInButton.setOnClickListener(this);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
-        callbackManager = CallbackManager.Factory.create();
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
+        callbackManager = CallbackManager.Factory.create();
+        //"email", "public_profile", "user_friends"
+        mFacebookSignInButton.setReadPermissions(AppConstants.EMAIL, AppConstants.PUBLIC_PROFILE, AppConstants.USER_FRIENDS);
+
 
         mSignInButton.setSize(SignInButton.SIZE_STANDARD);
     }
@@ -94,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     @Override
                     public void onCancel() {
-                        Log.w(TAG, "facebookSignin" );
+                        Log.w(TAG, "facebookSignin");
                     }
 
                     @Override
@@ -107,12 +114,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getUserProfile(AccessToken currentAccessToken) {
+        /*AuthCredential credential = FacebookAuthProvider.getCredential(currentAccessToken.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                            intent.putExtra(AppConstants.USERNAME, user.getDisplayName());
+                            intent.putExtra(AppConstants.IMAGE_URL, user.getPhotoUrl());
+                            intent.putExtra(AppConstants.EMAIL, user.getEmail());
+                            startActivity(intent);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });*/
         GraphRequest request = GraphRequest.newMeRequest(currentAccessToken, new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
-                    Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                    intent.putExtra(AppConstants.USER_PROFILE, object.toString());
-                    startActivity(intent);
+                Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                intent.putExtra(AppConstants.USER_PROFILE, object.toString());
+                startActivity(intent);
             }
         });
         Bundle parameters = new Bundle();
@@ -120,6 +151,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         request.setParameters(parameters);
         request.executeAsync();
     }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -129,22 +162,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             GoogleSignInResult signInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignIn(signInResult);
 
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
+            /*Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);*/
         }
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
             // Signed in successfully, show authenticated UI.
-            //updateUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            //updateUI(null);
         }
     }
 
@@ -160,13 +190,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             GoogleSignInAccount account = signInResult.getSignInAccount();
             Log.e(TAG, "display name: " + account.getDisplayName());
             String userName = account.getDisplayName();
-            String profileImageUrl = account.getPhotoUrl().toString();
+            String profileImageUrl = null;
+            if (account.getPhotoUrl() != null) {
+                profileImageUrl = account.getPhotoUrl().toString();
+            }
             String email = account.getEmail();
 
             Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-            intent.putExtra(userName, AppConstants.USERNAME);
-            intent.putExtra(profileImageUrl, AppConstants.IMAGE_URL);
-            intent.putExtra(email, AppConstants.EMAIL);
+            intent.putExtra(AppConstants.USERNAME, userName);
+            intent.putExtra(AppConstants.IMAGE_URL, profileImageUrl);
+            intent.putExtra(AppConstants.EMAIL, email);
             startActivity(intent);
         } else {
             //Signed out
@@ -176,6 +209,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onStart() {
         super.onStart();
+        /*// Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        getUserProfile(currentUser.getDisplayName());*/
+
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (opr.isDone()) {
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
@@ -200,5 +237,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         //sign in is not available
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
     }
 }

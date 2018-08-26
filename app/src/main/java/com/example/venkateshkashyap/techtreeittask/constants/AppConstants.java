@@ -14,4 +14,6 @@ public class AppConstants {
     public static final String USER_PROFILE = "userProfile";
     public static final String FIELDS = "fields";
     public static final String CONTACT_DETAILS_LIST = "ContactDetailsList";
+    public static final String PUBLIC_PROFILE = "public_profile";
+    public static final String USER_FRIENDS = "user_friends";
 }

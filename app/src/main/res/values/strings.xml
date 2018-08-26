@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Techtree IT Task</string>
-    <string name="facebook_app_id">2131907913724117</string>
-    <string name="fb_login_protocol_scheme">fb2131907913724117</string>
+    <string name="facebook_app_id">2184909188250118</string>
+    <string name="fb_login_protocol_scheme">fb2184909188250118</string>
+    <string name="access_needed">Contacts access needed</string>
+    <string name="no_permission">No Permissions</string>
+    <string name="confirm_contact_access">please confirm Contacts access</string>
 </resources>
