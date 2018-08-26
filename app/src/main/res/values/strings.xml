@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Techtree IT Task</string>
+    <string name="facebook_app_id">2131907913724117</string>
+    <string name="fb_login_protocol_scheme">fb2131907913724117</string>
 </resources>

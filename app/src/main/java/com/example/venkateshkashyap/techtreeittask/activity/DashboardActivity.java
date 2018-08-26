@@ -7,6 +7,7 @@ package com.example.venkateshkashyap.techtreeittask.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +17,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.venkateshkashyap.techtreeittask.R;
 import com.example.venkateshkashyap.techtreeittask.constants.AppConstants;
 
+import org.json.JSONObject;
+
 public class DashboardActivity extends AppCompatActivity implements View.OnClickListener {
 
     private de.hdodenhof.circleimageview.CircleImageView mProfileImage;
@@ -24,7 +27,7 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
     private Bundle bundle;
     private Button mWebButton;
     private Button mContactsButton;
-
+    private JSONObject response, profilePicData, profilePicUrl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +39,26 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
         mWebButton = findViewById(R.id.btn_web);
         mContactsButton = findViewById(R.id.btn_contacts);
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            String jsondata = intent.getStringExtra(AppConstants.USER_PROFILE);
+            //Log.w("Jsondata", jsondata);
+            try {
+                response = new JSONObject(jsondata);
+                mEmail.setText(response.get("email").toString());
+                mUserName.setText(response.get("name").toString());
+                profilePicData = new JSONObject(response.get("picture").toString());
+                profilePicUrl = new JSONObject(profilePicData.getString("data"));
+                Glide.with(getApplicationContext())
+                        .load(profilePicData.getString("url"))
+                        .apply(new RequestOptions())
+                        .thumbnail(0.5f)
+                        .into(mProfileImage);
+
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+        }
 
         mWebButton.setOnClickListener(this);
         mContactsButton.setOnClickListener(this);

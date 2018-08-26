@@ -7,9 +7,13 @@ package com.example.venkateshkashyap.techtreeittask.activity;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -21,22 +25,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.venkateshkashyap.techtreeittask.R;
 import com.example.venkateshkashyap.techtreeittask.adapter.ContactsAdapter;
+import com.example.venkateshkashyap.techtreeittask.constants.AppConstants;
+import com.example.venkateshkashyap.techtreeittask.interfaces.OnItemClickedListener;
 import com.example.venkateshkashyap.techtreeittask.model.ContactVo;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
-public class ContactsListActivity extends AppCompatActivity {
+public class ContactsListActivity extends AppCompatActivity implements OnItemClickedListener {
 
     private RecyclerView mRecyclerView;
     // Identifier for the permission request
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
+    List<ContactVo> contactVoList;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -119,7 +129,7 @@ public class ContactsListActivity extends AppCompatActivity {
     }
 
     private void getAllContacts() {
-        List<ContactVo> contactVoList = new ArrayList<>();
+        contactVoList = new ArrayList<>();
         ContactVo contactVo;
         ContentResolver contentResolver = getContentResolver();
         Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
@@ -157,16 +167,48 @@ public class ContactsListActivity extends AppCompatActivity {
 
                     while (emailCursor.moveToNext()) {
                         String emailId = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                        contactVo.setContactEmail(emailId);
+                    }
+
+                    Bitmap photo = null;
+
+                    try {
+                        InputStream inputStream = ContactsContract.Contacts.openContactPhotoInputStream(getContentResolver(),
+                                ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, new Long(id)));
+
+                        if (inputStream != null) {
+                            photo = BitmapFactory.decodeStream(inputStream);
+                            contactVo.setContactImage(photo);
+                            inputStream.close();
+                        }
+
+                        assert inputStream != null;
+                        //inputStream.close();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                     contactVoList.add(contactVo);
                 }
             }
-            ContactsAdapter contactsAdapter = new ContactsAdapter(contactVoList, this);
+            ContactsAdapter contactsAdapter = new ContactsAdapter(contactVoList, this, this);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             mRecyclerView.setAdapter(contactsAdapter);
             //draw divider line to recycler view
             DividerItemDecoration itemDecor = new DividerItemDecoration(getApplicationContext(), VERTICAL);
             mRecyclerView.addItemDecoration(itemDecor);
+        }
+    }
+
+    @Override
+    public void onClick(View view, int position) {
+        // check if item still exists
+        if (position != RecyclerView.NO_POSITION) {
+            ContactVo clickedDataItem = contactVoList.get(position);
+            Toast.makeText(view.getContext(), "You clicked " + clickedDataItem.getContactName(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(ContactsListActivity.this, ContactDetailsActivity.class);
+            intent.putExtra(AppConstants.CONTACT_DETAILS_LIST, clickedDataItem);
+            startActivity(intent);
         }
     }
 }
